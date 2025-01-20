@@ -43,7 +43,7 @@ Reading anything from a stream using the **Readline module** can be helpful. The
 
 ##### Useful Links
 
-_Please note, if you are seeking information in Russian, be aware that translations of the documentation may be outdated. They might not include all the latest features of the modules. For the most current and accurate information, always refer to the official documentation!_
+_Please note, if you are seeking information in Russian, be aware that translations of the documentation may be outdated.  They might not include all the latest features of the modules. For the most current and accurate information, always refer to the official documentation!_
 
 - Process:
   - [Process](https://nodejs.org/api/process.html)
