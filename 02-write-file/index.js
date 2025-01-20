@@ -1,10 +1,12 @@
 const fs = require('fs');
 const readline = require('readline');
+const path = require('path');
+const { stdout } = require('process');
 
-const fileStream = fs.createWriteStream('output.txt', {
+const fileStream = fs.createWriteStream(path.join(__dirname, 'output.txt'), {
   flags: 'a',
 });
-// 'a' flag is for appending to the file
+
 const rl = readline.createInterface(process.stdin, process.stdout);
 
 console.log('Hi! Type something to save to file:');
@@ -16,8 +18,12 @@ rl.on('line', (input) => {
   }
   fileStream.write(input + '\n');
 });
-// Close the file stream when the process is interrupted
-process.on('SIGINT', () => {
-  console.log('\nBye!');
+
+process.on('SIGINT', sayGoodbye);
+
+rl.on('close', sayGoodbye);
+
+function sayGoodbye() {
+  stdout.write('Bye!\n');
   process.exit();
-});
+}
