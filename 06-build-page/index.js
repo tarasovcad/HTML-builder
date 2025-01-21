@@ -28,7 +28,13 @@ async function buildPage() {
       path.join(__dirname, 'project-dist', 'index.html'),
       modifiedContent,
     );
-
+    // compile styles and copy assets
+    await compileStyles();
+    await copyDir(
+      path.join(__dirname, 'assets'),
+      path.join(__dirname, 'project-dist', 'assets'),
+    );
+    console.log('Assets copied successfully');
     console.log('HTML file created successfully');
   } catch (error) {
     console.error('Error:', error);
@@ -46,6 +52,54 @@ async function getComponentContent(componentName) {
   } catch (error) {
     console.error(`Error reading component ${componentName}:`, error);
     return '';
+  }
+}
+
+// compile CSS files
+async function compileStyles() {
+  const stylesDir = path.join(__dirname, 'styles');
+  const outputDir = path.join(__dirname, 'project-dist');
+
+  try {
+    // Read styles directory
+    const files = await fs.readdir(stylesDir, { withFileTypes: true });
+
+    // filter and collect their contents
+    const cssContents = await Promise.all(
+      files
+        .filter((file) => file.isFile() && path.extname(file.name) === '.css')
+        .map(async (file) => {
+          const filePath = path.join(stylesDir, file.name);
+          return await fs.readFile(filePath, 'utf8');
+        }),
+    );
+
+    // combine them into a single string
+    const bundleContent = cssContents.join('\n');
+
+    // Write to style.css
+    await fs.writeFile(path.join(outputDir, 'style.css'), bundleContent);
+
+    console.log('CSS files compiled successfully');
+  } catch (error) {
+    console.error('Error compiling CSS files:', error);
+  }
+}
+
+// copy assets folder
+async function copyDir(src, dest) {
+  await fs.mkdir(dest, { recursive: true });
+  const entries = await fs.readdir(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      await copyDir(srcPath, destPath);
+    } else {
+      await fs.copyFile(srcPath, destPath);
+    }
   }
 }
 
